@@ -13,7 +13,8 @@ import {
   Send,
   AlertTriangle,
 } from "lucide-react";
-import { useApp, Beneficiary } from "../context/AppContext";
+import { useApp } from "../providers/AppProvider";
+import type { Beneficiary } from "../../types";
 
 const roleConfig = {
   heir: {

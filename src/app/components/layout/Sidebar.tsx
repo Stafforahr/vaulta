@@ -15,7 +15,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { VaultaLogo } from "../VaultaLogo";
-import { useApp } from "../../context/AppContext";
+import { useApp } from "../../providers/AppProvider";
 
 const navItems = [
   {

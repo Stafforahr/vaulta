@@ -1,11 +1,22 @@
 import { Outlet } from "react-router";
 import { Bell, Menu, Shield } from "lucide-react";
 import { Sidebar } from "./Sidebar";
-import { AppProvider, useApp } from "../../context/AppContext";
+import { AppProvider, useApp } from "../../providers/AppProvider";
+import { useAuth } from "../../providers/AuthProvider";
 import { VaultaLogo } from "../VaultaLogo";
 
 function LayoutInner() {
-  const { sidebarOpen, setSidebarOpen, user } = useApp();
+  const { sidebarOpen, setSidebarOpen } = useApp();
+  const { user } = useAuth();
+
+  // If not authenticated, show loading (should redirect in real app)
+  if (!user) {
+    return (
+      <div className="flex h-screen bg-[#0B0F1A] items-center justify-center">
+        <div className="text-white/50">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-[#0B0F1A] overflow-hidden" style={{ fontFamily: "'Inter', sans-serif" }}>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import {
   Settings as SettingsIcon,
   User,
@@ -15,7 +15,8 @@ import {
   Trash2,
   Download,
 } from "lucide-react";
-import { useApp } from "../context/AppContext";
+import { useApp } from "../providers/AppProvider";
+import { useAuth } from "../providers/AuthProvider";
 import { useNavigate } from "react-router";
 
 const tabs = [
@@ -28,7 +29,12 @@ const tabs = [
 type Tab = typeof tabs[number]["id"];
 
 function ProfileTab() {
-  const { user } = useApp();
+  const { user } = useAuth();
+  
+  // Fallback if user is null (shouldn't happen in authenticated route)
+  if (!user) {
+    return <div className="p-4 text-white/50">Loading...</div>;
+  }
   const [form, setForm] = useState({
     name: user.name,
     email: user.email,
@@ -292,7 +298,11 @@ function NotificationsTab() {
 
 function BillingTab() {
   const navigate = useNavigate();
-  const { user } = useApp();
+  const { user } = useAuth();
+  
+  if (!user) {
+    return <div className="p-4 text-white/50">Loading...</div>;
+  }
 
   return (
     <div className="space-y-5">
@@ -384,7 +394,7 @@ function BillingTab() {
 export function Settings() {
   const [activeTab, setActiveTab] = useState<Tab>("profile");
 
-  const tabComponents: Record<Tab, JSX.Element> = {
+  const tabComponents: Record<Tab, ReactNode> = {
     profile: <ProfileTab />,
     security: <SecurityTab />,
     notifications: <NotificationsTab />,

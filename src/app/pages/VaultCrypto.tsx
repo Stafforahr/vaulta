@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Bitcoin, Plus, Eye, EyeOff, Copy, Trash2, Lock, X, AlertTriangle, CheckCircle } from "lucide-react";
-import { useApp, CryptoWallet } from "../context/AppContext";
+import { useApp } from "../providers/AppProvider";
+import type { CryptoWallet } from "../../types";
 
 const networkColors: Record<string, string> = {
   Bitcoin: "bg-orange-500/10 text-orange-400 border-orange-500/20",

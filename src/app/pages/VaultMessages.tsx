@@ -8,7 +8,8 @@ import {
   FileText,
   Clock,
 } from "lucide-react";
-import { useApp, PersonalMessage } from "../context/AppContext";
+import { useApp } from "../providers/AppProvider";
+import type { PersonalMessage } from "../../types";
 
 const conditionLabels: Record<string, string> = {
   death: "On Death",

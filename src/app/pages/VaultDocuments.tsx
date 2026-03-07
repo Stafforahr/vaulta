@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { FileText, Plus, Upload, Trash2, Lock, X, FileCheck, Eye } from "lucide-react";
-import { useApp, Document } from "../context/AppContext";
+import { useApp } from "../providers/AppProvider";
+import type { Document } from "../../types";
 
 const typeColors: Record<string, string> = {
   will: "bg-purple-500/10 text-purple-400 border-purple-500/20",

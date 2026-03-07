@@ -14,7 +14,7 @@ import {
   TrendingUp,
   Activity,
 } from "lucide-react";
-import { useApp } from "../context/AppContext";
+import { useApp } from "../providers/AppProvider";
 
 const activityLog = [
   { action: "Beneficiary verified", detail: "Ngozi Okafor confirmed identity", time: "2h ago", type: "success" },
