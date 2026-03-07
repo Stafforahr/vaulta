@@ -11,3 +11,7 @@ export {
 // Auth Service
 export * from './auth';
 
+// Supabase Client
+export { supabase, getCurrentUser, getSession, signOut, onAuthStateChange } from './supabase';
+export type { Profile } from './supabase';
+
