@@ -1,41 +1,71 @@
-# Vaulta Beta Readiness TODO Tracker
-Generated: $(date)
+# Vaulta Beta Preparation - Step-by-Step Action Plan
 
-Status: 80% Complete - Ready for Beta after fixes/testing
+**Priority: Fix critical issues first → Test → Deploy**
 
-## ✅ Completed (from analysis)
-- [x] Supabase Auth integration (AuthProvider, Login/Signup)
-- [x] Supabase Data CRUD (AppProvider fetches all vault tables)
-- [x] Protected routing (loaders)
-- [x] UI components & layout (shadcn, Sidebar/Dashboard using useAuth)
-- [x] Error handling (ErrorBoundary)
-- [x] Project restructuring (TODO.md phases 1-9)
+## 🚀 STEP 1: Create .env.example & Local Setup (5 mins)
+```
+create .env.example with:
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
+VITE_RESEND_API_KEY= (optional)
 
-## ✅ Code Fixes Complete 
-1-13. ✅ All verified: Imports correct, no unused, types aligned, no ProtectedRoute.tsx
+cp .env.example .env.local  # Fill with your Supabase keys
+npm install
+npm run dev
+```
+**Test**: Visit localhost:5173 → Signup/Login works?
 
-## 🛠 Setup & Verification
-14. [x] Create .env.example ✅
-15. [x] Fix supabase/schema.sql ✅
-16. [x] `npm run build` running/passing ✅
-17. [ ] Run `pnpm lint` - fix issues
+## 🛠 STEP 2: Fix Imports in Vault Pages (15 mins)
+**Files to check/fix** (import `useAuth` for user, `useApp` for data):
+- `src/pages/Beneficiaries.tsx`
+- `src/pages/VaultAccounts.tsx`
+- `src/pages/VaultCrypto.tsx`
+- `src/pages/VaultDocuments.tsx`
+- `src/pages/VaultMessages.tsx`
+- `src/pages/Settings.tsx`
 
-## 🧪 Testing
-18. [ ] Manual e2e tests:
-   - Signup/Login/Logout
-   - CRUD all vault items
-   - Protected routes
-   - RLS policies (via Supabase dashboard)
-19. [ ] User setup: Create Supabase project, run schema.sql, add .env vars
+**Pattern**:
+```tsx
+import { useApp } from '../app/providers/AppProvider';
+import { useAuth } from '../app/providers/AuthProvider';
+// ...
+const { user } = useAuth();  // Auth state
+const { accounts } = useApp();  // Vault data
+```
 
-## 📄 Documentation
-20. [ ] Update README.md with beta instructions
-21. [ ] Create DEPLOY.md (Vercel/Netlify)
+## 🔧 STEP 3: Fix Property Names (camelCase) (10 mins)
+**DB → Frontend mapping**:
+```
+inactivity_period → inactivityPeriod
+file_url → fileUrl
+avatar_initials → avatarInitials
+vault_health → vaultHealth
+```
+**Files**: `src/pages/TriggerSettings.tsx`, Dashboard.tsx, vault pages.
 
-## 🚀 Beta Release
-22. [ ] Deploy preview
-23. [ ] Final beta checklist
+## ✅ STEP 4: Verify Build & Test (10 mins)
+```
+npm run build  # No errors?
+npm run lint   # Fix issues
+```
+**Manual Tests**:
+1. Signup new user → Profile auto-created?
+2. Add digital account → Shows in Dashboard?
+3. Logout/Login → Data persists?
+4. Check Supabase dashboard → RLS blocks other users?
 
-**Next Step: Read pending pages for detailed fixes (1-13)**
+## 🚀 STEP 5: Deploy Preview (2 mins)
+```
+npm i -g vercel  # If needed
+vercel  # Preview URL
+```
+**Add env vars in Vercel dashboard**.
 
-**Instructions: Mark [x] as you complete each step. Run `pnpm dev` after fixes.
+## 📋 Progress Tracker
+- [ ] Step 1: Setup
+- [ ] Step 2: Imports
+- [ ] Step 3: Properties
+- [ ] Step 4: Tests/Build
+- [ ] Step 5: Deploy
+
+**Start with Step 1** - setup ensures real data flow. Ping me after Step 1 for next guidance or `npm run dev` output.
