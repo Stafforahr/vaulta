@@ -1,17 +1,35 @@
-// API Services
-export { api, endpoints } from './api/client';
-export { 
-  ApiException, 
-  ErrorCodes, 
-  UserFriendlyMessages, 
-  getErrorMessage, 
-  parseApiError 
-} from './api/errors';
+// Export Supabase client
+export { supabase } from './supabase';
 
-// Auth Service
+// Export types from types index
+export type {
+  Profile,
+  DigitalAccount,
+  CryptoWallet,
+  Document,
+  PersonalMessage,
+  Beneficiary,
+  TriggerConfig,
+  CheckinLog,
+  ActivityLog,
+  User,
+  AuthState,
+  LoginCredentials,
+  SignupData,
+  ApiError,
+  ApiResponse,
+  Toast,
+} from '../types';
+
+// Export auth functions
 export * from './auth';
 
-// Supabase Client
-export { supabase, getCurrentUser, getSession, signOut, onAuthStateChange } from './supabase';
-export type { Profile } from './supabase';
+// Export vault functions
+export * from './vault';
+
+// Export email functions
+export * from './email';
+
+// Export API client
+export { api, endpoints } from './api';
 

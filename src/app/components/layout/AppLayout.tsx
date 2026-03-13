@@ -3,7 +3,7 @@ import { Bell, Menu, Shield } from "lucide-react";
 import { Sidebar } from "./Sidebar";
 import { AppProvider, useApp } from "../../providers/AppProvider";
 import { useAuth } from "../../providers/AuthProvider";
-import { VaultaLogo } from "../VaultaLogo";
+import { VaultaLogo } from "../../../components/VaultaLogo";
 
 function LayoutInner() {
   const { sidebarOpen, setSidebarOpen } = useApp();

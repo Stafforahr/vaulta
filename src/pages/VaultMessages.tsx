@@ -8,7 +8,7 @@ import {
   FileText,
   Clock,
 } from "lucide-react";
-import { useApp } from "../providers/AppProvider";
+import { useApp } from "../app/providers/AppProvider";
 import type { PersonalMessage } from "../../types";
 
 const conditionLabels: Record<string, string> = {

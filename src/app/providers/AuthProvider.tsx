@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
-import { supabase, getCurrentUser, Profile } from '../../services/supabase';
+import { supabase, Profile } from '../../services/supabase';
 import type { User as AppUser, AuthState, LoginCredentials, SignupData } from '../../types';
 
 // Helper to convert Supabase user to app user
@@ -43,10 +43,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Fetch profile from profiles table
   const fetchProfile = useCallback(async (authUser: User): Promise<Profile | null> => {
+    // Profile ID is the same as auth.users.id (primary key references auth.users)
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
-      .eq('user_id', authUser.id)
+      .eq('id', authUser.id)
       .single();
 
     if (error) {
@@ -78,7 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, newSession) => {
+      async (_event, newSession) => {
         setSession(newSession);
         if (newSession?.user) {
           const profile = await fetchProfile(newSession.user);
@@ -145,39 +146,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (error) throw error;
 
+      // Profile is automatically created by the database trigger (handle_new_user)
+      // So we just need to fetch it and set the user state
       if (authData.user) {
-        // Create profile record
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            user_id: authData.user.id,
-            name: data.name,
-            phone: data.phone,
-            plan: 'free',
-            avatar_initials: data.name
-              .split(' ')
-              .map(n => n[0])
-              .slice(0, 2)
-              .join('')
-              .toUpperCase(),
-            location: '',
-          });
-
-        if (profileError) {
-          console.error('Error creating profile:', profileError);
-        }
-
-        setUser(mapUserToAppUser(authData.user, {
-          id: crypto.randomUUID(),
-          user_id: authData.user.id,
-          name: data.name,
-          phone: data.phone,
-          plan: 'free',
-          avatar_initials: data.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase(),
-          location: '',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        }));
+        // Wait a moment for the trigger to complete
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        const profile = await fetchProfile(authData.user);
+        setUser(mapUserToAppUser(authData.user, profile));
       }
     } catch (error) {
       console.error('Signup failed:', error);
@@ -185,7 +161,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [fetchProfile]);
 
   const refreshProfile = useCallback(async () => {
     if (!session?.user) return;

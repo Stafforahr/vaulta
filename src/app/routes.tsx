@@ -1,24 +1,24 @@
-import { createBrowserRouter, redirect, type LoaderFunctionArgs } from "react-router";
+import { createBrowserRouter, redirect } from "react-router";
 import { AppLayout } from "./components/layout/AppLayout";
-import { Landing } from "./pages/Landing";
-import { Login } from "./pages/Login";
-import { Signup } from "./pages/Signup";
-import { Dashboard } from "./pages/Dashboard";
-import { VaultAccounts } from "./pages/VaultAccounts";
-import { VaultCrypto } from "./pages/VaultCrypto";
-import { VaultDocuments } from "./pages/VaultDocuments";
-import { VaultMessages } from "./pages/VaultMessages";
-import { Beneficiaries } from "./pages/Beneficiaries";
-import { TriggerSettings } from "./pages/TriggerSettings";
-import { Settings } from "./pages/Settings";
-import { Pricing } from "./pages/Pricing";
-import { NotFound } from "./pages/NotFound";
+import { Landing } from "../pages/Landing";
+import { Login } from "../pages/Login";
+import { Signup } from "../pages/Signup";
+import { ForgotPassword } from "../pages/ForgotPassword";
+import { Dashboard } from "../pages/Dashboard";
+import { VaultAccounts } from "../pages/VaultAccounts";
+import { VaultCrypto } from "../pages/VaultCrypto";
+import { VaultDocuments } from "../pages/VaultDocuments";
+import { VaultMessages } from "../pages/VaultMessages";
+import { Beneficiaries } from "../pages/Beneficiaries";
+import { TriggerSettings } from "../pages/TriggerSettings";
+import { Settings } from "../pages/Settings";
+import { Pricing } from "../pages/Pricing";
+import { NotFound } from "../pages/NotFound";
 import { ErrorBoundary } from "../components/shared/ErrorBoundary";
 import { supabase } from "../services/supabase";
-import type { Session } from "@supabase/supabase-js";
 
 // Auth loader - checks if user is authenticated
-async function requireAuth({ request }: LoaderFunctionArgs) {
+async function requireAuth() {
   const { data: { session } } = await supabase.auth.getSession();
   
   if (!session) {
@@ -29,7 +29,7 @@ async function requireAuth({ request }: LoaderFunctionArgs) {
 }
 
 // Guest loader - redirects to app if already logged in
-async function requireGuest({ request }: LoaderFunctionArgs) {
+async function requireGuest() {
   const { data: { session } } = await supabase.auth.getSession();
   
   if (session) {
@@ -54,6 +54,12 @@ export const router = createBrowserRouter([
   {
     path: "/signup",
     Component: Signup,
+    errorElement: <ErrorBoundary />,
+    loader: requireGuest,
+  },
+  {
+    path: "/forgot-password",
+    Component: ForgotPassword,
     errorElement: <ErrorBoundary />,
     loader: requireGuest,
   },

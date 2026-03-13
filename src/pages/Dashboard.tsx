@@ -14,7 +14,8 @@ import {
   TrendingUp,
   Activity,
 } from "lucide-react";
-import { useApp } from "../providers/AppProvider";
+import { useApp } from "../app/providers/AppProvider";
+import { useAuth } from "../app/providers/AuthProvider";
 
 const activityLog = [
   { action: "Beneficiary verified", detail: "Ngozi Okafor confirmed identity", time: "2h ago", type: "success" },
@@ -26,12 +27,21 @@ const activityLog = [
 
 export function Dashboard() {
   const navigate = useNavigate();
-  const { user, accounts, cryptoWallets, documents, messages, beneficiaries, triggerConfig } = useApp();
+  const { accounts, cryptoWallets, documents, messages, beneficiaries, triggerConfig } = useApp();
+  const { user } = useAuth();
+  
+  // Use auth user or fallback to avoid null issues
+  const displayUser = user ?? {
+    name: 'User',
+    lastCheckin: 'Just now',
+    vaultHealth: 0,
+    plan: 'free' as const
+  };
 
   const healthTasks = [
     { label: "Add a legal will document", done: documents.some(d => d.type === "will"), link: "/app/vault/documents" },
     { label: "Assign all beneficiaries", done: beneficiaries.every(b => b.status === "verified"), link: "/app/beneficiaries" },
-    { label: "Configure trigger settings", done: triggerConfig.inactivityPeriod > 0, link: "/app/triggers" },
+    { label: "Configure trigger settings", done: triggerConfig.inactivity_period > 0, link: "/app/triggers" },
     { label: "Add emergency contact", done: beneficiaries.some(b => b.role === "trusted_contact"), link: "/app/beneficiaries" },
     { label: "Add a personal message", done: messages.length > 0, link: "/app/vault/messages" },
   ];
@@ -89,10 +99,10 @@ export function Dashboard() {
           className="text-white mb-1"
           style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "1.5rem" }}
         >
-          Good morning, {user.name.split(" ")[0]} 👋
+          Good morning, {displayUser.name.split(" ")[0]} 👋
         </h1>
         <p className="text-sm text-white/50">
-          Your vault is active · Last check-in: {user.lastCheckin}
+          Your vault is active · Last check-in: {displayUser.lastCheckin}
         </p>
       </div>
 
@@ -132,14 +142,14 @@ export function Dashboard() {
               className="text-[#D4A853]"
               style={{ fontSize: "2rem", fontWeight: 700, lineHeight: 1 }}
             >
-              {user.vaultHealth}%
+              {displayUser.vaultHealth}%
             </span>
             <span className="text-xs text-white/40 mb-1">{doneTasks}/{healthTasks.length} tasks</span>
           </div>
           <div className="w-full h-1.5 rounded-full bg-white/6">
             <div
               className="h-full rounded-full bg-gradient-to-r from-[#D4A853] to-[#E8BC6A] transition-all duration-700"
-              style={{ width: `${user.vaultHealth}%` }}
+              style={{ width: `${displayUser.vaultHealth}%` }}
             />
           </div>
         </div>
@@ -171,7 +181,7 @@ export function Dashboard() {
             </span>
           </div>
           <p className="text-xs text-white/40">
-            {triggerConfig.inactivityPeriod}d inactivity rule
+            {triggerConfig.inactivity_period}d inactivity rule
           </p>
         </div>
 

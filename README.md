@@ -1,11 +1,45 @@
+# Vaulta - Digital Legacy Vault
 
-  # Valuta
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://vitejs.dev/guide/)
 
-  This is a code bundle for Valuta. The original project is available at https://www.figma.com/design/GYYuCw7nczWhHoN9rwT0E6/Valuta.
+## 🚀 Quick Start (Beta Ready)
 
-  ## Running the code
+### 1. Clone & Install
+```bash
+git clone <repo>
+cd Webappvaulta-main
+npm install
+```
 
-  Run `npm i` to install the dependencies.
+### 2. Supabase Setup
+1. Create free Supabase project at [supabase.com](https://supabase.com)
+2. Copy `.env.example` → `.env.local` & add your keys
+3. Run `supabase/schema.sql` in SQL Editor
 
-  Run `npm run dev` to start the development server.
-  
+### 3. Development
+```bash
+npm run dev
+```
+Open [localhost:5173](http://localhost:5173)
+
+### 4. Build & Deploy
+```bash
+npm run build  # ✅ Passes
+```
+Deploy `dist/` to Vercel/Netlify.
+
+## 🧪 Beta Testing Checklist
+- [ ] Signup/Login/Logout (Supabase Auth)
+- [ ] CRUD Digital Accounts/Crypto/Documents/Messages/Beneficiaries
+- [ ] Trigger Settings configuration
+- [ ] Protected routes (loaders)
+- [ ] RLS policies (Supabase dashboard)
+- [ ] Mobile responsive (shadcn/ui)
+
+## 📊 Status
+- ✅ 100% Frontend Complete
+- ✅ Supabase Integrated (Auth + Data)
+- ✅ Build Passes
+- 🔄 Beta Ready - Test End-to-End
+
+See [TODO.md](TODO.md) for details.

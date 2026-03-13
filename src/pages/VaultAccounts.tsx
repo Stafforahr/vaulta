@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { KeyRound, Plus, Search, Eye, EyeOff, Trash2, Edit3, Lock, X } from "lucide-react";
-import { useApp } from "../providers/AppProvider";
+import { useApp } from "../app/providers/AppProvider";
 import type { DigitalAccount } from "../../types";
 
 const categoryColors: Record<string, string> = {

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import type { Toast } from '../../types';
 import { Toaster, toast as sonnerToast } from 'sonner';
 

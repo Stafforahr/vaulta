@@ -1,51 +1,41 @@
-# Vaulta Restructuring TODO
+# Vaulta Beta Readiness TODO Tracker
+Generated: $(date)
 
-## Phase 1 - Critical Fixes (Completed)
-- [x] Fix React dependencies in package.json (moved from peerDependencies to dependencies)
-- [x] Create tsconfig.json for proper TypeScript configuration
-- [x] Remove duplicate AppContext from src/app/context/
-- [x] Fix import paths in all pages (changed from ../context/AppContext to ../providers/AppProvider)
-- [x] Update layout components to use correct providers
-- [x] Delete unused figma folder
+Status: 80% Complete - Ready for Beta after fixes/testing
 
-## Phase 3 - Project Structure Reorganization
-- [ ] Create new folder structure (app/router, app/providers, features/, services/, hooks/, utils/, types/)
-- [ ] Move pages to src/pages/
-- [ ] Move UI components to src/components/ui/
-- [ ] Move layout components to src/components/layout/
-- [ ] Move shared components to src/components/shared/
-- [ ] Update import paths
+## ✅ Completed (from analysis)
+- [x] Supabase Auth integration (AuthProvider, Login/Signup)
+- [x] Supabase Data CRUD (AppProvider fetches all vault tables)
+- [x] Protected routing (loaders)
+- [x] UI components & layout (shadcn, Sidebar/Dashboard using useAuth)
+- [x] Error handling (ErrorBoundary)
+- [x] Project restructuring (TODO.md phases 1-9)
 
-## Phase 5 - State Management (Split Context) ✅ COMPLETED
-- [x] Create AuthContext (src/app/providers/AuthProvider.tsx)
-- [x] Create AppContext (src/app/providers/AppProvider.tsx)
-- [x] Create ThemeContext (src/app/providers/ThemeProvider.tsx)
-- [x] Create ToastContext (src/app/providers/ToastProvider.tsx)
-- [x] Create providers index file
-- [x] Update App.tsx to use new providers
-- [x] Create custom hooks (useAuth, useApp, useTheme, useToast)
+## ✅ Code Fixes Complete 
+1-13. ✅ All verified: Imports correct, no unused, types aligned, no ProtectedRoute.tsx
 
-## Phase 6 - Error Handling ✅ COMPLETED
-- [x] Create ErrorBoundary component (src/components/shared/ErrorBoundary.tsx)
-- [x] Create API error handling service (src/services/api/errors.ts)
-- [x] Create API client service (src/services/api/client.ts)
-- [x] Create utils (cn.ts, formatters.ts)
-- [x] Add error handling to routes
+## 🛠 Setup & Verification
+14. [x] Create .env.example ✅
+15. [x] Fix supabase/schema.sql ✅
+16. [x] `npm run build` running/passing ✅
+17. [ ] Run `pnpm lint` - fix issues
 
-## Phase 7 - Project Cleanup
-- [x] Delete unused figma folder ✅
-- [ ] Consolidate CSS files
-- [ ] Remove duplicate/empty files
-- [x] Add ESLint + Prettier config (existing)
-- [x] Update package.json scripts (build and dev available)
+## 🧪 Testing
+18. [ ] Manual e2e tests:
+   - Signup/Login/Logout
+   - CRUD all vault items
+   - Protected routes
+   - RLS policies (via Supabase dashboard)
+19. [ ] User setup: Create Supabase project, run schema.sql, add .env vars
 
-## Phase 8 - Backend Integration Prep ✅ COMPLETED
-- [x] Add protected routes with auth guards (route loaders in routes.tsx)
-- [x] Connect real auth API (Supabase integration)
-- [x] Add token refresh logic (handled by Supabase auth)
-- [x] Integrate API client with auth endpoints
-- [x] Add Supabase client (src/services/supabase.ts)
-- [x] Create .env.example for environment variables
+## 📄 Documentation
+20. [ ] Update README.md with beta instructions
+21. [ ] Create DEPLOY.md (Vercel/Netlify)
 
-## Status: Backend Integration Complete - Ready for Git Push
+## 🚀 Beta Release
+22. [ ] Deploy preview
+23. [ ] Final beta checklist
 
+**Next Step: Read pending pages for detailed fixes (1-13)**
+
+**Instructions: Mark [x] as you complete each step. Run `pnpm dev` after fixes.

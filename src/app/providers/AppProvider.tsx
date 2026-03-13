@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
+import { supabase } from '../../services/supabase';
 import type {
   DigitalAccount,
   CryptoWallet,
@@ -8,175 +9,20 @@ import type {
   TriggerConfig,
 } from '../../types';
 
-// Mock Data
-const mockAccounts: DigitalAccount[] = [
-  {
-    id: 'acc_001',
-    platform: 'Gmail',
-    username: 'adebayo.okafor',
-    email: 'adebayo.okafor@gmail.com',
-    category: 'email',
-    notes: 'Primary email account. Contains important financial records.',
-    encrypted: true,
-    createdAt: '2024-01-15',
-    icon: '📧',
-  },
-  {
-    id: 'acc_002',
-    platform: 'Facebook',
-    username: 'adebayo.okafor.lagos',
-    email: 'adebayo.okafor@gmail.com',
-    category: 'social',
-    notes: 'Family and friends account. Memorialization requested.',
-    encrypted: true,
-    createdAt: '2024-01-20',
-    icon: '👤',
-  },
-  {
-    id: 'acc_003',
-    platform: 'GTBank Online Banking',
-    username: 'adebaYO2024',
-    email: 'adebayo.okafor@gmail.com',
-    category: 'banking',
-    notes: 'Main savings and current account. Account number: 0123456789',
-    encrypted: true,
-    createdAt: '2024-02-01',
-    icon: '🏦',
-  },
-  {
-    id: 'acc_004',
-    platform: 'LinkedIn',
-    username: 'adebayo-okafor-lagos',
-    email: 'adebayo.okafor@gmail.com',
-    category: 'work',
-    notes: 'Professional network and career history.',
-    encrypted: true,
-    createdAt: '2024-02-10',
-    icon: '💼',
-  },
-];
-
-const mockCryptoWallets: CryptoWallet[] = [
-  {
-    id: 'crypto_001',
-    name: 'Main Bitcoin Wallet',
-    type: 'Bitcoin',
-    walletAddress: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
-    seedPhrase: 'abandon ability able about above absent absorb abstract absurd abuse access accident',
-    estimatedValue: '₦ 4,200,000',
-    network: 'Bitcoin Mainnet',
-    encrypted: true,
-    createdAt: '2024-01-10',
-  },
-  {
-    id: 'crypto_002',
-    name: 'Ethereum DeFi Wallet',
-    type: 'Ethereum',
-    walletAddress: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
-    seedPhrase: 'wagon yellow artist diesel finger gown history kite lemon moral nephew observe',
-    estimatedValue: '₦ 1,850,000',
-    network: 'Ethereum Mainnet',
-    encrypted: true,
-    createdAt: '2024-02-05',
-  },
-];
-
-const mockDocuments: Document[] = [
-  {
-    id: 'doc_001',
-    name: 'Last Will and Testament',
-    type: 'will',
-    description: 'Legal will dated March 2024, drafted by Okonkwo & Partners Law Firm.',
-    fileSize: '2.4 MB',
-    fileType: 'PDF',
-    uploadedAt: '2024-03-01',
-    encrypted: true,
-  },
-  {
-    id: 'doc_002',
-    name: 'Property Deed - Lekki Phase 1',
-    type: 'deed',
-    description: 'Certificate of occupancy for 4-bedroom property at 12 Admiralty Way.',
-    fileSize: '1.8 MB',
-    fileType: 'PDF',
-    uploadedAt: '2024-03-05',
-    encrypted: true,
-  },
-  {
-    id: 'doc_003',
-    name: 'Life Insurance Policy - AXA Mansard',
-    type: 'insurance',
-    description: 'Policy #AXA-2024-00812. Sum assured: ₦50,000,000. Beneficiary: Ngozi Okafor.',
-    fileSize: '3.1 MB',
-    fileType: 'PDF',
-    uploadedAt: '2024-03-10',
-    encrypted: true,
-  },
-];
-
-const mockMessages: PersonalMessage[] = [
-  {
-    id: 'msg_001',
-    title: 'To My Beloved Family',
-    recipient: 'Ngozi Okafor',
-    recipientId: 'ben_001',
-    content:
-      'My darling Ngozi and children, by the time you read this, I hope you know how deeply I loved each one of you. The house in Lekki is yours — please take care of it. The access to my accounts and investments are all documented in this vault. Stay strong, support each other, and build on what we started together. With all my love, Adebayo.',
-    type: 'text',
-    deliveryCondition: 'death',
-    createdAt: '2024-03-15',
-    encrypted: true,
-  },
-];
-
-const mockBeneficiaries: Beneficiary[] = [
-  {
-    id: 'ben_001',
-    name: 'Ngozi Okafor',
-    relationship: 'Spouse',
-    email: 'ngozi.okafor@gmail.com',
-    phone: '+234 802 345 6789',
-    role: 'heir',
-    status: 'verified',
-    assets: ['acc_001', 'acc_003', 'doc_001', 'doc_002', 'crypto_001'],
-    addedAt: '2024-01-15',
-  },
-  {
-    id: 'ben_002',
-    name: 'Chukwuemeka Okafor',
-    relationship: 'Brother',
-    email: 'emeka.okafor@yahoo.com',
-    phone: '+234 803 456 7890',
-    role: 'trusted_contact',
-    status: 'verified',
-    assets: ['doc_003'],
-    addedAt: '2024-01-20',
-  },
-  {
-    id: 'ben_003',
-    name: 'Barrister Akinwale Adeyemi',
-    relationship: 'Legal Executor',
-    email: 'a.adeyemi@okonkwopartners.com',
-    phone: '+234 804 567 8901',
-    role: 'executor',
-    status: 'pending',
-    assets: ['doc_001', 'doc_002'],
-    addedAt: '2024-02-01',
-  },
-];
-
-const defaultTriggerConfig: TriggerConfig = {
-  inactivityPeriod: 90,
-  checkInFrequency: 30,
-  verificationRule: '2of3',
-  requireDeathCertificate: true,
-  gracePeriod: 14,
-  notifyBeneficiaries: true,
-  autoRelease: false,
-  trustedContactAlerts: true,
-};
+interface AppUser {
+  id: string;
+  name: string;
+  email: string;
+  avatarInitials: string;
+  plan: string;
+  vaultHealth: number;
+  lastCheckin: string;
+  phone: string;
+  location: string;
+}
 
 interface AppContextType {
+  user: AppUser | null;
   accounts: DigitalAccount[];
   cryptoWallets: CryptoWallet[];
   documents: Document[];
@@ -184,32 +30,324 @@ interface AppContextType {
   beneficiaries: Beneficiary[];
   triggerConfig: TriggerConfig;
   sidebarOpen: boolean;
+  isLoading: boolean;
   setSidebarOpen: (open: boolean) => void;
   setTriggerConfig: (config: TriggerConfig) => void;
-  addAccount: (account: DigitalAccount) => void;
-  addCryptoWallet: (wallet: CryptoWallet) => void;
-  addDocument: (doc: Document) => void;
-  addMessage: (msg: PersonalMessage) => void;
-  addBeneficiary: (ben: Beneficiary) => void;
-  deleteAccount: (id: string) => void;
-  deleteCryptoWallet: (id: string) => void;
-  deleteDocument: (id: string) => void;
-  deleteMessage: (id: string) => void;
-  deleteBeneficiary: (id: string) => void;
+  addAccount: (account: DigitalAccount) => Promise<void>;
+  addCryptoWallet: (wallet: CryptoWallet) => Promise<void>;
+  addDocument: (doc: Document) => Promise<void>;
+  addMessage: (msg: PersonalMessage) => Promise<void>;
+  addBeneficiary: (ben: Beneficiary) => Promise<void>;
+  deleteAccount: (id: string) => Promise<void>;
+  deleteCryptoWallet: (id: string) => Promise<void>;
+  deleteDocument: (id: string) => Promise<void>;
+  deleteMessage: (id: string) => Promise<void>;
+  deleteBeneficiary: (id: string) => Promise<void>;
+  refreshData: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
+// Default trigger config
+const defaultTriggerConfig: TriggerConfig = {
+  id: '',
+  user_id: '',
+  inactivity_period: 90,
+  check_in_frequency: 30,
+  verification_rule: '2of3',
+  require_death_certificate: true,
+  grace_period: 14,
+  notify_beneficiaries: true,
+  auto_release: false,
+  trusted_contact_alerts: true,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+};
+
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [accounts, setAccounts] = useState<DigitalAccount[]>(mockAccounts);
-  const [cryptoWallets, setCryptoWallets] = useState<CryptoWallet[]>(mockCryptoWallets);
-  const [documents, setDocuments] = useState<Document[]>(mockDocuments);
-  const [messages, setMessages] = useState<PersonalMessage[]>(mockMessages);
-  const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>(mockBeneficiaries);
+  const [user, setUser] = useState<AppUser | null>(null);
+  const [accounts, setAccounts] = useState<DigitalAccount[]>([]);
+  const [cryptoWallets, setCryptoWallets] = useState<CryptoWallet[]>([]);
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [messages, setMessages] = useState<PersonalMessage[]>([]);
+  const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
   const [triggerConfig, setTriggerConfig] = useState<TriggerConfig>(defaultTriggerConfig);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch user profile from Supabase
+  const fetchProfile = useCallback(async (authUser: any): Promise<AppUser | null> => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', authUser.id)
+      .single();
+
+    if (error || !data) {
+      // Return default user if no profile exists
+      const name = authUser.email?.split('@')[0] || 'User';
+      return {
+        id: authUser.id,
+        name: name,
+        email: authUser.email || '',
+        avatarInitials: name.slice(0, 2).toUpperCase(),
+        plan: 'free',
+        vaultHealth: 0,
+        lastCheckin: 'Never',
+        phone: '',
+        location: '',
+      };
+    }
+
+    const name = data.name || authUser.email?.split('@')[0] || 'User';
+    const initials = name.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase();
+
+    return {
+      id: data.id,
+      name: data.name || name,
+      email: authUser.email || '',
+      avatarInitials: data.avatar_initials || initials,
+      plan: data.plan || 'free',
+      vaultHealth: data.vault_health || 0,
+      lastCheckin: 'Just now',
+      phone: data.phone || '',
+      location: data.location || '',
+    };
+  }, []);
+
+  // Fetch all user data from Supabase
+  const fetchUserData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      
+      if (!authUser) {
+        setIsLoading(false);
+        return;
+      }
+
+      // Fetch user profile
+      const profile = await fetchProfile(authUser);
+      setUser(profile);
+
+      // Fetch all data in parallel
+      const [
+        accountsRes,
+        cryptoRes,
+        documentsRes,
+        messagesRes,
+        beneficiariesRes,
+        triggerRes
+      ] = await Promise.all([
+        supabase.from('digital_accounts').select('*').eq('user_id', authUser.id),
+        supabase.from('crypto_wallets').select('*').eq('user_id', authUser.id),
+        supabase.from('documents').select('*').eq('user_id', authUser.id),
+        supabase.from('personal_messages').select('*').eq('user_id', authUser.id),
+        supabase.from('beneficiaries').select('*').eq('user_id', authUser.id),
+        supabase.from('trigger_configs').select('*').eq('user_id', authUser.id).single()
+      ]);
+
+      if (accountsRes.data) setAccounts(accountsRes.data);
+      if (cryptoRes.data) setCryptoWallets(cryptoRes.data);
+      if (documentsRes.data) setDocuments(documentsRes.data);
+      if (messagesRes.data) setMessages(messagesRes.data);
+      if (beneficiariesRes.data) setBeneficiaries(beneficiariesRes.data);
+      if (triggerRes.data) {
+        setTriggerConfig(triggerRes.data);
+} else {
+        // Create default trigger config if none exists
+        const { data: newConfig } = await supabase
+          .from('trigger_configs')
+          .upsert({ ...defaultTriggerConfig, user_id: authUser.id })
+          .select()
+          .single();
+        if (newConfig) setTriggerConfig(newConfig);
+      }
+
+      // Calculate vault health based on filled data
+      if (profile) {
+        const totalAssets = (accountsRes.data?.length || 0) + 
+          (cryptoRes.data?.length || 0) + 
+          (documentsRes.data?.length || 0) + 
+          (messagesRes.data?.length || 0);
+        const hasBeneficiaries = (beneficiariesRes.data?.length || 0) > 0;
+        
+        let health = 0;
+        if (totalAssets > 0) health += 25;
+        if ((documentsRes.data?.length || 0) > 0) health += 25;
+        if (hasBeneficiaries) health += 25;
+        if (beneficiariesRes.data?.some((b: Beneficiary) => b.status === 'verified')) health += 25;
+        
+        setUser(prev => prev ? { ...prev, vaultHealth: health } : null);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fetchProfile]);
+
+  // Initial data fetch
+  useEffect(() => {
+    fetchUserData();
+  }, [fetchUserData]);
+
+  // Listen for auth changes
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        fetchUserData();
+      } else {
+        // Clear data on logout
+        setUser(null);
+        setAccounts([]);
+        setCryptoWallets([]);
+        setDocuments([]);
+        setMessages([]);
+        setBeneficiaries([]);
+        setTriggerConfig(defaultTriggerConfig);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [fetchUserData]);
+
+  const addAccount = useCallback(async (account: DigitalAccount) => {
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    if (!authUser) return;
+
+    const { data, error } = await supabase
+      .from('digital_accounts')
+      .insert({ ...account, user_id: authUser.id })
+      .select()
+      .single();
+
+    if (data && !error) {
+      setAccounts(prev => [data, ...prev]);
+    }
+  }, []);
+
+  const addCryptoWallet = useCallback(async (wallet: CryptoWallet) => {
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    if (!authUser) return;
+
+    const { data, error } = await supabase
+      .from('crypto_wallets')
+      .insert({ ...wallet, user_id: authUser.id })
+      .select()
+      .single();
+
+    if (data && !error) {
+      setCryptoWallets(prev => [data, ...prev]);
+    }
+  }, []);
+
+  const addDocument = useCallback(async (doc: Document) => {
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    if (!authUser) return;
+
+    const { data, error } = await supabase
+      .from('documents')
+      .insert({ ...doc, user_id: authUser.id })
+      .select()
+      .single();
+
+    if (data && !error) {
+      setDocuments(prev => [data, ...prev]);
+    }
+  }, []);
+
+  const addMessage = useCallback(async (msg: PersonalMessage) => {
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    if (!authUser) return;
+
+    const { data, error } = await supabase
+      .from('personal_messages')
+      .insert({ ...msg, user_id: authUser.id })
+      .select()
+      .single();
+
+    if (data && !error) {
+      setMessages(prev => [data, ...prev]);
+    }
+  }, []);
+
+  const addBeneficiary = useCallback(async (ben: Beneficiary) => {
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    if (!authUser) return;
+
+    const { data, error } = await supabase
+      .from('beneficiaries')
+      .insert({ ...ben, user_id: authUser.id })
+      .select()
+      .single();
+
+    if (data && !error) {
+      setBeneficiaries(prev => [data, ...prev]);
+    }
+  }, []);
+
+  const deleteAccount = useCallback(async (id: string) => {
+    const { error } = await supabase
+      .from('digital_accounts')
+      .delete()
+      .eq('id', id);
+
+    if (!error) {
+      setAccounts(prev => prev.filter(a => a.id !== id));
+    }
+  }, []);
+
+  const deleteCryptoWallet = useCallback(async (id: string) => {
+    const { error } = await supabase
+      .from('crypto_wallets')
+      .delete()
+      .eq('id', id);
+
+    if (!error) {
+      setCryptoWallets(prev => prev.filter(w => w.id !== id));
+    }
+  }, []);
+
+  const deleteDocument = useCallback(async (id: string) => {
+    const { error } = await supabase
+      .from('documents')
+      .delete()
+      .eq('id', id);
+
+    if (!error) {
+      setDocuments(prev => prev.filter(d => d.id !== id));
+    }
+  }, []);
+
+  const deleteMessage = useCallback(async (id: string) => {
+    const { error } = await supabase
+      .from('personal_messages')
+      .delete()
+      .eq('id', id);
+
+    if (!error) {
+      setMessages(prev => prev.filter(m => m.id !== id));
+    }
+  }, []);
+
+  const deleteBeneficiary = useCallback(async (id: string) => {
+    const { error } = await supabase
+      .from('beneficiaries')
+      .delete()
+      .eq('id', id);
+
+    if (!error) {
+      setBeneficiaries(prev => prev.filter(b => b.id !== id));
+    }
+  }, []);
+
+  const refreshData = useCallback(async () => {
+    await fetchUserData();
+  }, [fetchUserData]);
 
   const value: AppContextType = {
+    user,
     accounts,
     cryptoWallets,
     documents,
@@ -217,18 +355,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
     beneficiaries,
     triggerConfig,
     sidebarOpen,
+    isLoading,
     setSidebarOpen,
     setTriggerConfig,
-    addAccount: useCallback((a) => setAccounts((prev) => [a, ...prev]), []),
-    addCryptoWallet: useCallback((w) => setCryptoWallets((prev) => [w, ...prev]), []),
-    addDocument: useCallback((d) => setDocuments((prev) => [d, ...prev]), []),
-    addMessage: useCallback((m) => setMessages((prev) => [m, ...prev]), []),
-    addBeneficiary: useCallback((b) => setBeneficiaries((prev) => [b, ...prev]), []),
-    deleteAccount: useCallback((id) => setAccounts((prev) => prev.filter((a) => a.id !== id)), []),
-    deleteCryptoWallet: useCallback((id) => setCryptoWallets((prev) => prev.filter((w) => w.id !== id)), []),
-    deleteDocument: useCallback((id) => setDocuments((prev) => prev.filter((d) => d.id !== id)), []),
-    deleteMessage: useCallback((id) => setMessages((prev) => prev.filter((m) => m.id !== id)), []),
-    deleteBeneficiary: useCallback((id) => setBeneficiaries((prev) => prev.filter((b) => b.id !== id)), []),
+    addAccount,
+    addCryptoWallet,
+    addDocument,
+    addMessage,
+    addBeneficiary,
+    deleteAccount,
+    deleteCryptoWallet,
+    deleteDocument,
+    deleteMessage,
+    deleteBeneficiary,
+    refreshData,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
@@ -241,4 +381,3 @@ export function useApp() {
   }
   return context;
 }
-

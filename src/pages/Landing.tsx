@@ -1,12 +1,10 @@
 import { useNavigate } from "react-router";
 import {
-  Shield,
   Lock,
   Users,
   Zap,
   FileText,
   Bitcoin,
-  KeyRound,
   MessageSquareHeart,
   CheckCircle,
   ArrowRight,
@@ -71,7 +69,7 @@ const plans = [
   {
     name: "Premium",
     price: "₦2,500",
-    period: "/month",
+    period: "/week",
     description: "For individuals who want complete peace of mind",
     features: [
       "Unlimited digital accounts",
@@ -89,7 +87,7 @@ const plans = [
   {
     name: "Enterprise",
     price: "₦15,000",
-    period: "/month",
+    period: "/week",
     description: "For families and businesses",
     features: [
       "Everything in Premium",
@@ -115,13 +113,13 @@ const testimonials = [
   {
     name: "Obinna Nwachukwu",
     role: "Tech Professional, Lagos",
-    text: "Finally, a solution built for Nigerians. The WhatsApp check-in feature is brilliant — my parents actually use it.",
+    text: "Finally, a solution built for Security against Decentralized loss. The WhatsApp check-in feature is brilliant — my parents actually use it.",
     rating: 5,
   },
   {
     name: "Amaka Eze",
     role: "Lawyer, Port Harcourt",
-    text: "I recommend Vaulta to all my estate planning clients. The legal document vault is exactly what was missing in Nigeria.",
+    text: "I recommend Vaulta to all my estate planning clients. The legal document vault is exactly what was missing in the legal niche.",
     rating: 5,
   },
 ];
@@ -212,7 +210,7 @@ export function Landing() {
             >
               Vaulta protects your digital accounts, crypto wallets, and legal documents — then
               releases them to the right people at the right time. Your family deserves to inherit
-              everything you've built.
+              everything you've built without a loss to the decentralized system.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -238,7 +236,7 @@ export function Landing() {
               {[
                 { label: "AES-256 Encrypted" },
                 { label: "Zero-Knowledge" },
-                { label: "NDPR Compliant" },
+                { label: "Data Protection Compliant" },
               ].map((s) => (
                 <div key={s.label} className="flex items-center gap-2 text-sm text-white/50">
                   <CheckCircle size={14} className="text-emerald-400" />
@@ -283,7 +281,7 @@ export function Landing() {
               fontWeight: 600,
             }}
           >
-            Everything You Need to Protect Your Legacy
+            Vaulta is Everything You Need to Protect Your Legacy
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -328,7 +326,7 @@ export function Landing() {
                   {
                     step: "01",
                     title: "Store Securely",
-                    desc: "Add your digital accounts, crypto wallets, and documents. Everything is encrypted client-side with AES-256.",
+                    desc: "Add your digital accounts, DeFi wallets, and documents. Everything is encrypted client-side with AES-256.",
                   },
                   {
                     step: "02",
@@ -398,7 +396,7 @@ export function Landing() {
           >
             Transparent Pricing. No Surprises.
           </h2>
-          <p className="text-white/50 mt-3">Cancel anytime. Priced for Nigerian families.</p>
+          <p className="text-white/50 mt-3">Cancel anytime. A Fair Price for Everyone.</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {plans.map((plan) => (
@@ -465,7 +463,7 @@ export function Landing() {
                 fontWeight: 600,
               }}
             >
-              Trusted Across Nigeria
+              Trusted Across the World
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -506,7 +504,7 @@ export function Landing() {
             Start Protecting Your Legacy Today
           </h2>
           <p className="text-white/60 mb-8 max-w-md mx-auto">
-            Join thousands of Nigerians who are ensuring their families inherit everything they've built.
+            Join thousands of Internet User's who are ensuring their families inherit everything they've built without hassle.
           </p>
           <button
             onClick={() => navigate("/signup")}
@@ -523,7 +521,7 @@ export function Landing() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <VaultaLogo size="sm" />
           <p className="text-sm text-white/30">
-            © 2026 Vaulta Technologies Ltd. Lagos, Nigeria. NDPR Compliant.
+            © 2026 Vaulta Technologies Ltd. Data Protection Compliant.
           </p>
           <div className="flex items-center gap-6">
             {["Privacy", "Terms", "Security"].map((l) => (

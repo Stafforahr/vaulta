@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Eye, EyeOff, Shield, ArrowRight, Fingerprint } from "lucide-react";
 import { VaultaLogo } from "../components/VaultaLogo";
+import { supabase } from "../services/supabase";
 
 export function Login() {
   const navigate = useNavigate();
@@ -19,10 +20,29 @@ export function Login() {
     }
     setError("");
     setLoading(true);
-    // Simulate auth
-    await new Promise((r) => setTimeout(r, 1200));
-    setLoading(false);
-    navigate("/app");
+
+    try {
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (signInError) {
+        setError(signInError.message);
+        setLoading(false);
+        return;
+      }
+
+      if (data.user) {
+        // Successfully logged in, navigate to app
+        navigate("/app");
+      }
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
+      console.error("Login error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -111,7 +131,11 @@ export function Login() {
                 <input type="checkbox" className="w-4 h-4 rounded border-white/20 accent-[#D4A853]" />
                 <span className="text-sm text-white/50">Remember me</span>
               </label>
-              <button type="button" className="text-sm text-[#D4A853] hover:text-[#E8BC6A] transition-colors">
+              <button 
+                type="button" 
+                onClick={() => navigate("/forgot-password")}
+                className="text-sm text-[#D4A853] hover:text-[#E8BC6A] transition-colors"
+              >
                 Forgot password?
               </button>
             </div>

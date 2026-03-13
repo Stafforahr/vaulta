@@ -13,7 +13,7 @@ import {
   Send,
   AlertTriangle,
 } from "lucide-react";
-import { useApp } from "../providers/AppProvider";
+import { useApp } from "../app/providers/AppProvider";
 import type { Beneficiary } from "../../types";
 
 const roleConfig = {

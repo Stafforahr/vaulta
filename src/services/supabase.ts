@@ -1,4 +1,5 @@
 import { createClient, SupabaseClient, User, Session } from '@supabase/supabase-js';
+import type { Profile } from '../types';
 
 // Environment variables - you need to set these in your .env file
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
@@ -23,18 +24,8 @@ export const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKe
   },
 });
 
-// Type definitions for our app
-export interface Profile {
-  id: string;
-  user_id: string;
-  name: string;
-  phone: string;
-  plan: 'free' | 'premium' | 'enterprise';
-  avatar_initials: string;
-  location: string;
-  created_at: string;
-  updated_at: string;
-}
+// Re-export Profile from types
+export { Profile };
 
 // Helper functions
 export const getCurrentUser = async (): Promise<User | null> => {

@@ -14,8 +14,8 @@ import {
   Crown,
   LogOut,
 } from "lucide-react";
-import { VaultaLogo } from "../VaultaLogo";
-import { useApp } from "../../providers/AppProvider";
+import { VaultaLogo } from "../../../components/VaultaLogo";
+import { useAuth } from "../../providers/AuthProvider";
 
 const navItems = [
   {
@@ -58,8 +58,16 @@ interface SidebarProps {
 }
 
 export function Sidebar({ mobile, onClose }: SidebarProps) {
-  const { user } = useApp();
+  const { user } = useAuth();
   const navigate = useNavigate();
+
+  // Fallback user for plan info
+  const displayUser = user || {
+    name: 'User',
+    email: '',
+    plan: 'free' as const,
+    avatarInitials: 'U'
+  };
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150 group ${
@@ -129,7 +137,7 @@ export function Sidebar({ mobile, onClose }: SidebarProps) {
       </nav>
 
       {/* Plan Badge */}
-      {user.plan === "free" && (
+      {displayUser.plan === "free" && (
         <div className="mx-3 mb-3 p-3 rounded-xl bg-[#D4A853]/10 border border-[#D4A853]/20">
           <div className="flex items-center gap-2 mb-1.5">
             <Crown size={14} className="text-[#D4A853]" />
@@ -153,13 +161,13 @@ export function Sidebar({ mobile, onClose }: SidebarProps) {
       {/* User */}
       <div className="px-4 py-3 border-t border-white/8 flex items-center gap-3">
         <div className="w-8 h-8 rounded-full bg-[#D4A853]/20 border border-[#D4A853]/30 flex items-center justify-center text-[#D4A853] text-xs flex-shrink-0" style={{ fontWeight: 600 }}>
-          {user.avatarInitials}
+          {displayUser.avatarInitials}
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm text-white truncate" style={{ fontWeight: 500 }}>
-            {user.name.split(" ")[0]}
+            {displayUser.name.split(" ")[0]}
           </p>
-          <p className="text-xs text-white/40 truncate">{user.email}</p>
+          <p className="text-xs text-white/40 truncate">{displayUser.email}</p>
         </div>
         <button
           onClick={() => navigate("/login")}

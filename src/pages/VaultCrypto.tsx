@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Bitcoin, Plus, Eye, EyeOff, Copy, Trash2, Lock, X, AlertTriangle, CheckCircle } from "lucide-react";
-import { useApp } from "../providers/AppProvider";
+import { useApp } from "../app/providers/AppProvider";
 import type { CryptoWallet } from "../../types";
 
 const networkColors: Record<string, string> = {

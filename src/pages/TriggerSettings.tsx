@@ -9,7 +9,7 @@ import {
   Save,
   Activity,
 } from "lucide-react";
-import { useApp } from "../providers/AppProvider";
+import { useApp } from "../app/providers/AppProvider";
 
 function Toggle({
   checked,

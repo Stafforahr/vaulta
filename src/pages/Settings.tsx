@@ -15,8 +15,7 @@ import {
   Trash2,
   Download,
 } from "lucide-react";
-import { useApp } from "../providers/AppProvider";
-import { useAuth } from "../providers/AuthProvider";
+import { useAuth } from "../app/providers/AuthProvider";
 import { useNavigate } from "react-router";
 
 const tabs = [

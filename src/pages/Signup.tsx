@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Eye, EyeOff, Shield, CheckCircle, ArrowRight } from "lucide-react";
 import { VaultaLogo } from "../components/VaultaLogo";
+import { supabase } from "../services/supabase";
 
 const passwordChecks = [
   { label: "At least 8 characters", test: (p: string) => p.length >= 8 },
@@ -25,17 +26,34 @@ export function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [error, setError] = useState("");
 
   const update = (k: string, v: string | boolean) => setForm((f) => ({ ...f, [k]: v }));
   const passChecks = passwordChecks.map((c) => ({ ...c, passed: c.test(form.password) }));
 
-  const handleStep1 = (e: React.FormEvent) => {
+  const handleStep1 = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (form.password !== form.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+    
+    setError("");
+    setLoading(true);
     setStep(2);
   };
 
   const handleOtp = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (form.password !== form.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+    
+    setError("");
+    setLoading(true);
     setLoading(true);
     await new Promise((r) => setTimeout(r, 1200));
     setLoading(false);

@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { FileText, Plus, Upload, Trash2, Lock, X, FileCheck, Eye } from "lucide-react";
-import { useApp } from "../providers/AppProvider";
+import { useApp } from "../app/providers/AppProvider";
 import type { Document } from "../../types";
 
 const typeColors: Record<string, string> = {

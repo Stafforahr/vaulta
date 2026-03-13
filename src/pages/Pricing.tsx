@@ -32,7 +32,7 @@ const plans = [
     id: "premium",
     name: "Premium",
     price: "₦2,500",
-    period: "/month",
+    period: "/week",
     icon: Crown,
     iconColor: "text-[#D4A853]",
     description: "Complete peace of mind for individuals and small families",
@@ -59,7 +59,7 @@ const plans = [
     id: "enterprise",
     name: "Enterprise",
     price: "₦15,000",
-    period: "/month",
+    period: "/week",
     icon: Building2,
     iconColor: "text-blue-400",
     description: "For families, businesses and estate planning professionals",
@@ -161,7 +161,7 @@ export function Pricing() {
             <span className="text-[#D4A853]">Every Family</span>
           </h1>
           <p className="text-white/50 max-w-md mx-auto">
-            Priced for Nigerians. Cancel anytime. All plans include AES-256 encryption.
+            Fair Price for Everyone. Cancel anytime. All plans include AES-256 encryption.
           </p>
         </div>
 
