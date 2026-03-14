@@ -3,22 +3,33 @@
  * Handles JWT token management, storage, and refresh logic
  */
 
-import { api, endpoints } from './api/client';
+import { supabase } from './supabase';
+import type { User, Session } from '@supabase/supabase-js';
 
 // Token storage keys
 const ACCESS_TOKEN_KEY = 'vaulta_access_token';
 const REFRESH_TOKEN_KEY = 'vaulta_refresh_token';
 const TOKEN_EXPIRY_KEY = 'vaulta_token_expiry';
 
-export interface AuthTokens {
-  accessToken: string;
-  refreshToken: string;
-  expiresIn: number; // seconds
-}
-
 export interface LoginRequest {
   email: string;
   password: string;
+}
+
+export interface SignupRequest {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  user: User & {
+    name?: string;
+    phone?: string;
+    plan?: 'free' | 'premium' | 'enterprise';
+  };
+  session: Session | null;
 }
 
 export interface SignupRequest {
@@ -130,39 +141,44 @@ export async function refreshAccessToken(): Promise<AuthTokens | null> {
  * Login with email and password
  */
 export async function login(credentials: LoginRequest): Promise<AuthResponse> {
-  const response = await api.post<AuthResponse>(endpoints.auth.login, credentials);
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: credentials.email,
+    password: credentials.password,
+  });
   
-  if (response.tokens) {
-    storeTokens(response.tokens);
-  }
+  if (error) throw error;
   
-  return response;
+  return { user: data.user!, session: data.session };
 }
 
 /**
  * Register new user
  */
 export async function signup(data: SignupRequest): Promise<AuthResponse> {
-  const response = await api.post<AuthResponse>(endpoints.auth.signup, data);
+  const { data: authData, error } = await supabase.auth.signUp({
+    email: data.email,
+    password: data.password,
+    options: {
+      data: {
+        name: data.name,
+        phone: data.phone,
+        plan: 'free',
+      },
+    },
+  });
+
+  if (error) throw error;
   
-  if (response.tokens) {
-    storeTokens(response.tokens);
-  }
-  
-  return response;
+  return { user: authData.user!, session: authData.session };
 }
 
 /**
  * Logout user
  */
 export async function logout(): Promise<void> {
-  try {
-    await api.post(endpoints.auth.logout);
-  } catch (error) {
-    console.error('Logout API call failed:', error);
-  } finally {
-    clearTokens();
-  }
+  const { error } = await supabase.auth.signOut();
+  if (error) console.error('Logout failed:', error);
+  clearTokens();
 }
 
 /**

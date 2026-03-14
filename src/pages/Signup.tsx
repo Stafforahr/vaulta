@@ -3,6 +3,9 @@ import { useNavigate } from "react-router";
 import { Eye, EyeOff, Shield, CheckCircle, ArrowRight } from "lucide-react";
 import { VaultaLogo } from "../components/VaultaLogo";
 import { supabase } from "../services/supabase";
+import { signup } from "../services/auth";
+import { sendEmail } from "../services/email";
+import * as crypto from 'crypto';
 
 const passwordChecks = [
   { label: "At least 8 characters", test: (p: string) => p.length >= 8 },
@@ -39,25 +42,80 @@ export function Signup() {
       return;
     }
     
-    setError("");
-    setLoading(true);
-    setStep(2);
+    if (passChecks.filter(c => !c.passed).length > 0) {
+      setError("Password must meet all requirements");
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      setError('');
+      
+      // Real signup with Supabase
+      const userData = {
+        name: form.fullName,
+        email: form.email,
+        phone: form.phone,
+        password: form.password
+      };
+      
+      await signup(userData);
+      
+      // Generate & send OTP via Resend
+      const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const otpHash = crypto.createHash('sha256').update(otpCode).digest('hex');
+      
+      // Store OTP temporarily (in production use Redis)
+      localStorage.setItem('signup_otp', otpHash);
+      localStorage.setItem('signup_email', form.email);
+      
+      // Send email via Resend
+      await sendEmail(form.email, 'verification', {
+        OTP_CODE: otpCode
+      });
+      
+      setStep(2);
+    } catch (err: any) {
+      setError(err.message || 'Signup failed. Try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (form.password !== form.confirmPassword) {
-      setError("Passwords do not match");
+    const otpCode = otp.join('');
+    const storedOtp = localStorage.getItem('signup_otp');
+    const storedEmail = localStorage.getItem('signup_email');
+    
+    if (!storedOtp || !storedEmail || otpCode.length !== 6) {
+      setError('Invalid OTP or session expired');
       return;
     }
     
-    setError("");
-    setLoading(true);
-    setLoading(true);
-    await new Promise((r) => setTimeout(r, 1200));
-    setLoading(false);
-    navigate("/app");
+    try {
+      setLoading(true);
+      setError('');
+      
+      // Verify OTP (in production: Redis lookup + hash compare)
+      const inputHash = crypto.createHash('sha256').update(otpCode).digest('hex');
+      if (inputHash !== storedOtp) {
+        setError('Invalid OTP code');
+        return;
+      }
+      
+      // Clear OTP
+      localStorage.removeItem('signup_otp');
+      localStorage.removeItem('signup_email');
+      
+      // Redirect to app (user already created by Supabase)
+      navigate("/app");
+    } catch (err) {
+      setError('Verification failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleOtpInput = (i: number, val: string) => {
