@@ -1,11 +1,12 @@
+
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useNavigate } from "react-router";
 import { Eye, EyeOff, Shield, CheckCircle, ArrowRight } from "lucide-react";
 import { VaultaLogo } from "../components/VaultaLogo";
 import { supabase } from "../services/supabase";
 import { signup } from "../services/auth";
 import { sendEmail } from "../services/email";
-import * as crypto from 'crypto';
+import { simpleHash } from "../utils/crypto";
 
 const passwordChecks = [
   { label: "At least 8 characters", test: (p: string) => p.length >= 8 },
@@ -61,9 +62,8 @@ export function Signup() {
       
       await signup(userData);
       
-      // Generate & send OTP via Resend
       const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-      const otpHash = crypto.createHash('sha256').update(otpCode).digest('hex');
+      const otpHash = simpleHash(otpCode);
       
       // Store OTP temporarily (in production use Redis)
       localStorage.setItem('signup_otp', otpHash);
@@ -99,7 +99,7 @@ export function Signup() {
       setError('');
       
       // Verify OTP (in production: Redis lookup + hash compare)
-      const inputHash = crypto.createHash('sha256').update(otpCode).digest('hex');
+      const inputHash = simpleHash(otpCode);
       if (inputHash !== storedOtp) {
         setError('Invalid OTP code');
         return;
